@@ -4,10 +4,6 @@ padding: 0;
 margin: 0;
 }
 
-:root {
-  --desktop-space-adjustment: -7px; 
-}
-
 .navbar {
 display: flex;
 justify-content: space-between;
@@ -52,15 +48,9 @@ margin-left: 7px;
 margin-top: var(--navbar-height, 80px);
 }
 
-@media (min-width: 1025px) {
-.content_below_navbar {
-margin-top: calc(var(--navbar-height, 80px) + var(--desktop-space-adjustment)); 
-}
-}
-
 @media (max-width: 992px) {
 .navbar {
-padding: 10px 15px;
+padding: 9px 9px;
 }
 
 .navbar > h1 {
@@ -69,7 +59,7 @@ font-size: 24px;
 
 .navbar_link > a {
 font-size: 20px;
-padding: 0 10px;
+padding: 0 9px;
 }
 
 .emoji {
