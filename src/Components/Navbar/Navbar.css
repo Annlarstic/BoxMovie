@@ -1,0 +1,105 @@
+.navbar {
+display: flex;
+justify-content: space-between; 
+align-items: center;
+padding: 10px 28px; 
+width: 100%;
+border-bottom: 1.5px solid red;
+}
+
+.navbar > h1 {
+font-size: 28px;
+color: red;
+}
+
+.navbar_link {
+display: flex;
+align-items: center;
+}
+
+.navbar_link > a {
+display: flex;
+align-items: center;
+font-size: 25px;
+font-weight: 500;
+color: white;
+text-decoration: none;
+padding: 0 14px;
+}
+
+.emoji {
+ width: 25px;
+height: 25px;
+margin-left: 7px;
+}
+
+@media (max-width: 992px) {
+.navbar {
+padding: 10px 15px;
+}
+
+.navbar > h1 {
+font-size: 24px;
+}
+
+.navbar_link > a {
+font-size: 20px;
+padding: 0 10px;
+}
+
+.emoji {
+width: 22px;
+height: 22px;
+}
+}
+
+@media (max-width: 768px) {
+.navbar {
+flex-direction: column;
+align-items: flex-start;
+gap: 10px;
+}
+
+.navbar_link {
+width: 100%;
+justify-content: space-around;
+flex-wrap: wrap;
+}
+
+.navbar_link > a {
+font-size: 18px;
+padding: 5px 8px;
+margin: 2px 0;
+}
+
+.navbar > h1 {
+font-size: 22px;
+}
+}
+
+@media (max-width: 576px) {
+.navbar {
+padding: 8px 10px;
+}
+
+.navbar_link {
+flex-direction: column;
+align-items: stretch;
+}
+
+.navbar_link > a {
+font-size: 16px;
+justify-content: center;
+padding: 8px 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar_link > a:last-child {
+border-bottom: none;
+}
+
+.emoji {
+width: 20px;
+height: 20px;
+}
+}
