@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useLayoutEffect } from 'react'
 import "./MovieList.css"
 import Fire from '../../assets/emoji/fire.jpg'
 import MovieCard from './MovieCard'
@@ -13,6 +13,14 @@ function MovieList() {
     const [sortKey, setSortKey] = useState('popularity');
     const [sortOrder, setSortOrder] = useState('desc');
 
+
+    useLayoutEffect(() => {
+        const navbarElement = document.querySelector('.navbar'); 
+        if (navbarElement) {
+            const height = navbarElement.offsetHeight;
+            document.documentElement.style.setProperty('--navbar-height', `${height + 2}px`); 
+        }
+    }, []); 
 
     useEffect(() => {
         fetchMovies();
@@ -43,16 +51,58 @@ function MovieList() {
         setAllMovies(uniqueMovies);
     }
 
-    const sortMovies = (key, order) => {
+    const handleSortKeyChange = (e) => {
+        const key = e.target.value;
+        setSortKey(key);
+        
+        if (key === 'popularity' || key === 'date' || key === 'rating') {
+            const sortedBase = [...allMovies].sort((a, b) => {
+                 let valA, valB;
+                 if (key === 'rating') {
+                    valA = a.vote_average;
+                    valB = b.vote_average;
+                 } else if (key === 'date') {
+                    valA = new Date(a.release_date);
+                    valB = new Date(b.release_date);
+                 } else {
+                    valA = a.popularity;
+                    valB = b.popularity;
+                 }
+
+                 if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+                 if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+                 return 0;
+            });
+
+            let finalMovies;
+            if (searchTerm) {
+                finalMovies = sortedBase.filter(movie => 
+                    movie.original_title.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            } else {
+                finalMovies = sortedBase.filter(movie => movie.vote_average >= minRating);
+            }
+
+            setMovies(finalMovies);
+        }
+    };
+
+
+    const handleSortOrderChange = (e) => {
+        const order = e.target.value;
+        setSortOrder(order);
+        
         const sorted = [...movies].sort((a, b) => {
             let valA, valB;
-
-            if (key === 'rating') {
+            if (sortKey === 'rating') {
                 valA = a.vote_average;
                 valB = b.vote_average;
-            } else if (key === 'date') {
+            } else if (sortKey === 'date') {
                 valA = new Date(a.release_date);
                 valB = new Date(b.release_date);
+            } else if (sortKey === 'popularity') {
+                valA = a.popularity;
+                valB = b.popularity;
             } else {
                 return 0;
             }
@@ -65,25 +115,33 @@ function MovieList() {
         setMovies(sorted);
     };
 
-    const handleSortKeyChange = (e) => {
-        const key = e.target.value;
-        setSortKey(key);
-        sortMovies(key, sortOrder);
-    };
-
-    const handleSortOrderChange = (e) => {
-        const order = e.target.value;
-        setSortOrder(order);
-        sortMovies(sortKey, order);
-    };
-
     const handleFilter = rate => {
         setminRating(rate);
         setSearchTerm('');
 
         const filtered = allMovies.filter(movie => movie.vote_average >= rate);
         
-        setMovies(filtered);
+        const sortedAndFiltered = filtered.sort((a, b) => {
+            let valA, valB;
+            if (sortKey === 'rating') {
+                valA = a.vote_average;
+                valB = b.vote_average;
+            } else if (sortKey === 'date') {
+                valA = new Date(a.release_date);
+                valB = new Date(b.release_date);
+            } else if (sortKey === 'popularity') {
+                valA = a.popularity;
+                valB = b.popularity;
+            } else {
+                return 0;
+            }
+            
+            if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+            if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        setMovies(sortedAndFiltered);
     }
 
     const handleSearch = (e) => {
@@ -94,12 +152,33 @@ function MovieList() {
         const filteredMovies = allMovies.filter(movie => 
             movie.original_title.toLowerCase().includes(term)
         );
+        
+        const sortedAndSearched = filteredMovies.sort((a, b) => {
+             let valA, valB;
+             if (sortKey === 'rating') {
+                valA = a.vote_average;
+                valB = b.vote_average;
+             } else if (sortKey === 'date') {
+                valA = new Date(a.release_date);
+                valB = new Date(b.release_date);
+             } else if (sortKey === 'popularity') {
+                valA = a.popularity;
+                valB = b.popularity;
+             } else {
+                return 0;
+             }
+             
+             if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+             if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+             return 0;
+        });
 
-        setMovies(filteredMovies);
+        setMovies(sortedAndSearched);
     };
 
+
     return (
-        <section className='align_center movie_list'>
+        <section className='align_center movie_list content_below_navbar'>
         <header className='align_center movie_list_header'>
             <h2 className='movie_list_heading'>Popular Movies
             <img className='movielist_emoji' src={Fire} alt="" />
@@ -125,7 +204,7 @@ function MovieList() {
             onClick={() => handleFilter(5)}> 5+ Star </li>
 
             <li className={minRating === 0 && searchTerm === '' ? "movie_filter_item active" : "movie_filter_item"} onClick={() => { 
-            setMovies(allMovies);
+            setMovies(allMovies.sort((a,b) => sortOrder === 'desc' ? b.popularity - a.popularity : a.popularity - b.popularity));
             setminRating(0);
             setSearchTerm('');
             }}> All</li>
